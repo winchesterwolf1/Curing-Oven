@@ -5,26 +5,39 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
+/*** Digital Pin Mapping ***/
+// Digital input pin mapped to the UVLED pin. PD5, D5, Push switch Active Low
 #define UVLED 5
+// Digital input pin mapped to the Knob key pin. PD2, D2, Push switch Active Low
+#define KNOB_PUSH 2
+// Digital input pin mapped to the Knob key pin. PC1, A1/D15. ACW rotation second low
+#define KNOB_ENC_1 15
+// Digital input pin mapped to the Knob key pin. PC0, A0/D14. ACW rotation first low
+#define KNOB_ENC_2 14
 
-#define KNOB_PUSH 2 //PD2, D2, Push switch Active Low
-#define KNOB_ENC_1 15 //PC1, A1/D15. ACW rotation second low
-#define KNOB_ENC_2 14 //PC0, A0/D14. ACW rotation first low
-#define CW_rot 1
-
-#define SCREEN_REFRESH_RATE 100 //ms
-
+/*** System Parameters ***/
+// Number of Ms delay between each screen draw
+#define SCREEN_REFRESH_RATE 100
+// Default Setting for the curing time
 #define UVLED_DEFAULT_ON_TIME 1
+// Default Setting for the motor speed
 #define DEFAULT_MOTOR_SPEED 100
 
+/*** Conversion Parameters ***/
+// Seconds to Milliseconds conversion
 #define ms 1000
 
+
+/*** Global Classes, Structs and Enums ***/
+
+/// @brief Settings class for the system settings
 struct SelectedSettings {
     int on_time = UVLED_DEFAULT_ON_TIME;
     int brightness = 100;
     int motor_speed = DEFAULT_MOTOR_SPEED;
 };
 
+/// @brief Enum for the index of the system functions array
 enum SysFuncIndex
 {
     SysFuncLedStart,
@@ -33,7 +46,7 @@ enum SysFuncIndex
     SysFuncMotorStop
 };
 
-/* Debugging Defines */
+/*** Debugging Defines ***/
 //#define TIMESERVER_DEBUG
 
 

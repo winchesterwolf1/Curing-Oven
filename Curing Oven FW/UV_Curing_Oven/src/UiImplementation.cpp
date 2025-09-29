@@ -1,8 +1,10 @@
 #include "UiImplementation.h"
 #include "Timer.h"
 
+// Number of items in the main menu
 #define MAIN_MENU_NUM_ITEMS 6
 
+/// @brief Implementation of the UV curing oven UI
 class UvCuringOvenUi : public Ui
 {
     public:
@@ -156,9 +158,12 @@ class UvCuringOvenUi : public Ui
 
 void SetScreenRefreshFlag();
 
+/// @brief A timer to set the refresh screen flag 
 static Timer _screenRefreshTimer(SCREEN_REFRESH_RATE, SetScreenRefreshFlag);
-bool _refreshScreen = true;
+/// @brief Refresh screen flag. When true the screen should be reset
+volatile bool _refreshScreen = true;
 
+/// @brief Sets the refresh flag to trigger this UI implementation to update when UiUpdate is run
 void SetScreenRefreshFlag()
 {
     _refreshScreen = true;
@@ -166,9 +171,6 @@ void SetScreenRefreshFlag()
 }
 
 /// @brief Crete Ui objects and initialise Ui to start
-/// @param selectedSettings 
-/// @param systemFunctions 
-/// @return 
 Ui* CreateUi(SelectedSettings* selectedSettings, void(**systemFunctions)())
 {
     static UvCuringOvenUi UiObj(KNOB_ENC_1, KNOB_ENC_2, KNOB_PUSH, U8G2_R0, /* cs=*/ 10, /* dc=*/ 8, /* reset=*/ 7, selectedSettings, systemFunctions);
@@ -178,13 +180,18 @@ Ui* CreateUi(SelectedSettings* selectedSettings, void(**systemFunctions)())
     return &UiObj;
 }
 
+/// @brief Check for user input, update status and draw screen if ready
 void UiUpdate(Ui* uiObj)
 {
+    // Check for and react to any user inputs
     uiObj->CheckUserInput();
 
+    // Cast the UI object, and update the Ui main menu status. 
+    // Temporary until a status page is made
     UvCuringOvenUi* castUiObj = static_cast<UvCuringOvenUi*>(uiObj);
     castUiObj->UpdateMainMenuStatus();
 
+    // If the refresh flag is set, refresh the screen.
     if(_refreshScreen)
     {
         _refreshScreen = false;

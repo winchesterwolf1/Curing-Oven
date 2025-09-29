@@ -15,7 +15,7 @@
 // The limit of the number of characters able to be displayed on the screen (font specific)
 #define SCREEN_CHARACTER_LIMIT 13
 
-
+/// @brief Base screen class for drawing a menu screen
 class Screen
 {
     private:
