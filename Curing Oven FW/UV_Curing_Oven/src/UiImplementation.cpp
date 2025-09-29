@@ -22,9 +22,9 @@ class UvCuringOvenUi : public Ui
     UvCuringOvenUi(
         int knobS1, int knobS2, int knobKey, 
         const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, 
-        SelectedSettings* selectedSettings, void(**systemFunctions)())
+        SelectedSettings* selectedSettings, void(**systemFunctions)(), int speaker)
         :
-        Ui(knobS1, knobS2, knobKey, oledRot, oledCs, oledDc, oledReset),
+        Ui(knobS1, knobS2, knobKey, oledRot, oledCs, oledDc, oledReset, speaker),
         _selectedSettings(selectedSettings),
         _systemFunctions(systemFunctions),
         _returnWrapper({this, &UvCuringOvenUi::ReturnToPreviousScreen})
@@ -173,7 +173,7 @@ void SetScreenRefreshFlag()
 /// @brief Crete Ui objects and initialise Ui to start
 Ui* CreateUi(SelectedSettings* selectedSettings, void(**systemFunctions)())
 {
-    static UvCuringOvenUi UiObj(KNOB_ENC_1, KNOB_ENC_2, KNOB_PUSH, U8G2_R0, /* cs=*/ 10, /* dc=*/ 8, /* reset=*/ 7, selectedSettings, systemFunctions);
+    static UvCuringOvenUi UiObj(KNOB_ENC_1, KNOB_ENC_2, KNOB_PUSH, U8G2_R0, /* cs=*/ 10, /* dc=*/ 8, /* reset=*/ 7, selectedSettings, systemFunctions, SPEAKER_PIN);
     UiObj.SetupMainMenu();
     UiObj.SetupNumericInput();
     _screenRefreshTimer.Start();

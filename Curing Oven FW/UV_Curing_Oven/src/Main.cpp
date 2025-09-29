@@ -2,16 +2,19 @@
 #include "EncoderKnob.h"
 #include "Ui.h"
 #include "UiImplementation.h"
-#include "PWM.h"
 #include "TimeServer.h"
+#include "Motor.h"
+#include "Sound.h"
 
 int counter = 0;
 int menu_state = 0;
+int motor_Speed = 0;
 
 void LedStop();
 void LedStart();
 void MotorStart();
 void MotorStop();
+void SpeakerFinishedBeep();
 
 void(*systemFunctions[4])();
 
@@ -20,6 +23,8 @@ void SetScreenRefreshFlag();
 
 static SelectedSettings _settings;
 static Timer _uvLedOnTimer(UVLED_DEFAULT_ON_TIME, LedStop);
+static Motor _motorController(MOTOR_EN_PIN);
+static Sound _soundController(SPEAKER_PIN);
 
 Ui* UiObj;
 
@@ -34,18 +39,17 @@ void setup()
     pinMode(UVLED, OUTPUT);
     digitalWrite(UVLED, LOW);
     
-    Serial.println("Initialising PWM");
-    init_PWM();
+    Serial.println("Initialising Motor");
+    _motorController.setSpeed(_settings.motor_speed);
     
     Serial.println("Initialising UI");
     systemFunctions[SysFuncLedStart] = LedStart;
     systemFunctions[SysFuncLedStop] = LedStop;
     systemFunctions[SysFuncMotorStart] = MotorStart;
     systemFunctions[SysFuncMotorStop] = MotorStop;
+    systemFunctions[SysFuncUiSelectBeep] = SpeakerFinishedBeep;
 
     UiObj = CreateUi(&_settings, systemFunctions);  
-    
-    Serial.println("Starting Screen Refresh Timer");
 }
 
 void LedStop()
@@ -56,6 +60,10 @@ void LedStop()
     {
         _uvLedOnTimer.Stop();
     }
+
+    _motorController.stop();
+
+    SpeakerFinishedBeep();
 }
 
 void LedStart()
@@ -64,6 +72,9 @@ void LedStart()
     digitalWrite(UVLED, HIGH);
     _uvLedOnTimer.SetTimerLength(_settings.on_time*ms);
     _uvLedOnTimer.Start();
+
+    _motorController.setSpeed(_settings.motor_speed);
+    _motorController.start();
 }
 
 void MotorStart()
@@ -71,8 +82,14 @@ void MotorStart()
 void MotorStop()
 {}
 
+void SpeakerFinishedBeep()
+{
+    _soundController.playTone(2000, 2000);
+}
+
 void loop() 
 {
+    
     UiUpdate(UiObj);
     //update_LED();
 }

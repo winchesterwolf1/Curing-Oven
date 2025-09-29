@@ -6,13 +6,17 @@
 #include <avr/interrupt.h>
 
 /*** Digital Pin Mapping ***/
-// Digital input pin mapped to the UVLED pin. PD5, D5, Push switch Active Low
+// Digital input pin mapped to the UVLED pin. PD5, D5, Active High
 #define UVLED 5
+// Digital input pin mapped to the Motor pin. PD9, D9, Active High
+#define MOTOR_EN_PIN 9
+// Digital input pin mapped to the Speaker pin. PD3, D3, Active High
+#define SPEAKER_PIN 3
 // Digital input pin mapped to the Knob key pin. PD2, D2, Push switch Active Low
 #define KNOB_PUSH 2
-// Digital input pin mapped to the Knob key pin. PC1, A1/D15. ACW rotation second low
+// Digital input pin mapped to the Knob S1 pin. PC1, A1/D15. ACW rotation second low
 #define KNOB_ENC_1 15
-// Digital input pin mapped to the Knob key pin. PC0, A0/D14. ACW rotation first low
+// Digital input pin mapped to the Knob S2 pin. PC0, A0/D14. ACW rotation first low
 #define KNOB_ENC_2 14
 
 /*** System Parameters ***/
@@ -43,7 +47,8 @@ enum SysFuncIndex
     SysFuncLedStart,
     SysFuncLedStop,
     SysFuncMotorStart,
-    SysFuncMotorStop
+    SysFuncMotorStop,
+    SysFuncUiSelectBeep,
 };
 
 /*** Debugging Defines ***/

@@ -42,7 +42,8 @@ class Ui
         /// @param oledCs Cs pin of the Oled used to display this ui
         /// @param oledDc Dc pin of the Oled used to display this ui
         /// @param oledReset Reset pin of the Oled used to display this ui
-        Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset);
+        /// @param speaker Speaker pin of this Ui
+        Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, int speaker);
 
         /// @brief Adds a screen to the list of screens
         /// @param name name of the screen
@@ -64,6 +65,9 @@ class Ui
         U8G2_SH1106_128X64_NONAME_1_4W_HW_SPI _u8g2;
 
     private:
+
+        /// @brief Digital pin used to create UI beeps
+        int _speakerPin;
 
         /// @brief List of screens used to draw the Ui
         ScreenEntry _screens[MAX_SCREENS];

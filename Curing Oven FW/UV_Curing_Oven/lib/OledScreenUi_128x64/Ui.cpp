@@ -1,10 +1,15 @@
 #include "Ui.h"
 #include "EncoderKnob.h"
 
+#define KNOB_PRESS_BEEP_FREQUENCY 1000
+#define KNOB_PRESS_BEEP_TIME 40
+
+
 /// @brief Initialise Encoder Knob and Oled screen, then register callback functions, and start the Ui.
-Ui::Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset):
+Ui::Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, int speaker = -1):
 _encoderKnob(knobS1, knobS2, knobKey), 
-_u8g2(oledRot, oledCs, oledDc, oledReset)
+_u8g2(oledRot, oledCs, oledDc, oledReset),
+_speakerPin(speaker)
 {    
     _encoderKnob.Register();
 
@@ -110,6 +115,11 @@ void Ui::handleKnobPress()
 void Ui::handleKnobRelease()
 {
     _currentScreen->OnButtonClick();
+
+    if(_speakerPin != -1)
+    {
+        tone(_speakerPin, KNOB_PRESS_BEEP_FREQUENCY, KNOB_PRESS_BEEP_TIME);
+    }
 }
 
 
