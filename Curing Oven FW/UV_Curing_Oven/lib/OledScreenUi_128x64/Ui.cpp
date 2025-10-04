@@ -6,10 +6,10 @@
 
 
 /// @brief Initialise Encoder Knob and Oled screen, then register callback functions, and start the Ui.
-Ui::Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, int speaker = -1):
+Ui::Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, int speaker):
 _encoderKnob(knobS1, knobS2, knobKey), 
 _u8g2(oledRot, oledCs, oledDc, oledReset),
-_speakerPin(speaker)
+_toneGenerator(speaker)
 {    
     _encoderKnob.Register();
 
@@ -116,10 +116,7 @@ void Ui::handleKnobRelease()
 {
     _currentScreen->OnButtonClick();
 
-    if(_speakerPin != -1)
-    {
-        tone(_speakerPin, KNOB_PRESS_BEEP_FREQUENCY, KNOB_PRESS_BEEP_TIME);
-    }
+    _toneGenerator.playTone(KNOB_PRESS_BEEP_FREQUENCY, KNOB_PRESS_BEEP_TIME);
 }
 
 

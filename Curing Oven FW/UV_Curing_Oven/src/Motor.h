@@ -7,6 +7,8 @@ public:
 
     ~Motor();
 
+    void Setup();
+
     void start();
     void stop();
     void setSpeed(unsigned int speed);

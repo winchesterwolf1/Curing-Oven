@@ -1,8 +1,15 @@
-#include "UiImplementation.h"
+#include "UiTask.h"
+#include "Ui.h"
+#include "EventManagerTask.h"
 #include "Timer.h"
 
 // Number of items in the main menu
 #define MAIN_MENU_NUM_ITEMS 6
+
+#define CURE_COMPLETE_BEEP_FREQ 2000
+#define CURE_COMPLETE_BEEP_DURATION 1500
+#define CURE_COMPLETE_BEEP_PAUSE_DURATION 1500
+#define CURE_COMPLETE_BEEP_NUMBER 3
 
 /// @brief Implementation of the UV curing oven UI
 class UvCuringOvenUi : public Ui
@@ -21,12 +28,14 @@ class UvCuringOvenUi : public Ui
     /// @param systemFunctions pointer to the system callback functions that will be run by the Ui
     UvCuringOvenUi(
         int knobS1, int knobS2, int knobKey, 
-        const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, 
-        SelectedSettings* selectedSettings, void(**systemFunctions)(), int speaker)
+        const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset,
+        int speaker,
+        SelectedSettings* selectedSettings, SysEvtQueue* evtQ)
         :
         Ui(knobS1, knobS2, knobKey, oledRot, oledCs, oledDc, oledReset, speaker),
+        _cureCompleteBeepTimer(CURE_COMPLETE_BEEP_DURATION + CURE_COMPLETE_BEEP_PAUSE_DURATION, CureCompleteBeepCallback, this),
         _selectedSettings(selectedSettings),
-        _systemFunctions(systemFunctions),
+        _evtQ(evtQ),
         _returnWrapper({this, &UvCuringOvenUi::ReturnToPreviousScreen})
     {
     }
@@ -74,7 +83,7 @@ class UvCuringOvenUi : public Ui
     void SetupNumericInput()
     {
         // Set up the screen for exposure time, just as a placeholder
-        _reusableNumericInput.Set(&_u8g2, "Exposure Time", &_selectedSettings->on_time, 0, 100, _returnWrapper.Execute, &_returnWrapper);
+        _reusableNumericInput.Set(&_u8g2, "Exposure Time", &_selectedSettings->CuringTime, 0, 100, _returnWrapper.Execute, &_returnWrapper);
         AddScreen("numericInput", &_reusableNumericInput);
     }
 
@@ -92,7 +101,38 @@ class UvCuringOvenUi : public Ui
         }
     }
 
+    /// @brief Plays a tone to the user indicating that curing has completed
+    void PlayCureCompleteBeep()
+    {
+        static int numberOfBeeps = 0;
+        // If we have beeped less than 3 times
+        if(numberOfBeeps < CURE_COMPLETE_BEEP_NUMBER)
+        {
+            // Increment number of beeps, Play tone, and start the timer again
+            numberOfBeeps++;
+            _toneGenerator.playTone(CURE_COMPLETE_BEEP_FREQ, CURE_COMPLETE_BEEP_DURATION);
+            _cureCompleteBeepTimer.Start();
+        }
+        else
+        {
+            // Reset the timer
+            numberOfBeeps = 0;
+        }
+    }
+
     private:
+
+    /* Timers */
+
+    /// @brief Timer for indicating to the user that the curing has completed
+    Timer _cureCompleteBeepTimer;
+
+    /// @brief Callback wrapper for curecomplete timer
+    /// @param ui ui object to call beep from
+    static void CureCompleteBeepCallback(void* ui)
+    {
+        static_cast<UvCuringOvenUi*>(ui)->PlayCureCompleteBeep();
+    }
 
     /* Screen Objects */
 
@@ -106,8 +146,8 @@ class UvCuringOvenUi : public Ui
 
     /// @brief Setting object list to modify in the menu
     SelectedSettings* _selectedSettings;
-    /// @brief System functions to be run by menu buttons
-    void(**_systemFunctions)();
+    /// @brief System Event Queue
+    SysEvtQueue* _evtQ;
 
 
     /* Callbacks functions for each page and menu button */
@@ -118,19 +158,19 @@ class UvCuringOvenUi : public Ui
     /// @brief Callback function for the UV On button in the main menu
     void UvOnAction()
     {
-        _systemFunctions[SysFuncLedStart]();
+        _evtQ->Add(SysEvt_StartCuringPressed);
     }
    
     /// @brief Callback function for the UV Off button in the main menu
     void UvOffAction()
     {
-        _systemFunctions[SysFuncLedStop]();
+        _evtQ->Add(SysEvt_CancelCuringPressed);
     }
 
     /// @brief Callback function for the Set Time button in the main menu
     void SetTimeAction()
     {
-        _reusableNumericInput.Set(&_u8g2, "Exposure Time", &_selectedSettings->on_time, 0, 100, _returnWrapper.Execute, &_returnWrapper);
+        _reusableNumericInput.Set(&_u8g2, "Exposure Time", &_selectedSettings->CuringTime, 0, 100, _returnWrapper.Execute, &_returnWrapper);
         SetScreen("numericInput");
     }
     
@@ -144,7 +184,7 @@ class UvCuringOvenUi : public Ui
     /// @brief Callback function for the Motor Speed button in the main menu
     void MotorSpeedAction()
     {
-        _reusableNumericInput.Set(&_u8g2, "Motor Speed", &_selectedSettings->motor_speed, 0, 100, _returnWrapper.Execute, &_returnWrapper);
+        _reusableNumericInput.Set(&_u8g2, "Motor Speed", &_selectedSettings->MotorSpeed, 0, 100, _returnWrapper.Execute, &_returnWrapper);
         SetScreen("numericInput");
     }
 
@@ -163,6 +203,10 @@ static Timer _screenRefreshTimer(SCREEN_REFRESH_RATE, SetScreenRefreshFlag);
 /// @brief Refresh screen flag. When true the screen should be reset
 volatile bool _refreshScreen = true;
 
+static UvCuringOvenUi* uiPtr;
+
+Semaphore gUiCompletedSem;
+
 /// @brief Sets the refresh flag to trigger this UI implementation to update when UiUpdate is run
 void SetScreenRefreshFlag()
 {
@@ -170,35 +214,37 @@ void SetScreenRefreshFlag()
     _screenRefreshTimer.Start();
 }
 
-/// @brief Crete Ui objects and initialise Ui to start
-Ui* CreateUi(SelectedSettings* selectedSettings, void(**systemFunctions)())
+void SetupUi(void* param)
 {
-    static UvCuringOvenUi UiObj(KNOB_ENC_1, KNOB_ENC_2, KNOB_PUSH, U8G2_R0, /* cs=*/ 10, /* dc=*/ 8, /* reset=*/ 7, selectedSettings, systemFunctions, SPEAKER_PIN);
-    UiObj.SetupMainMenu();
-    UiObj.SetupNumericInput();
+    SelectedSettings* settings = static_cast<SelectedSettings*>(param);
+
+    Serial.println("Initialising UI");
+
+    static UvCuringOvenUi uiObj(KNOB_ENC_1, KNOB_ENC_2, KNOB_PUSH, U8G2_R0, /* cs=*/ 10, /* dc=*/ 8, /* reset=*/ 7, SPEAKER_PIN, settings, &gEventQ);
+    uiPtr = &uiObj;
+    uiPtr->SetupMainMenu();
+    uiPtr->SetupNumericInput();
     _screenRefreshTimer.Start();
-    return &UiObj;
 }
 
-/// @brief Check for user input, update status and draw screen if ready
-void UiUpdate(Ui* uiObj)
+void RunUi(void* param)
 {
     // Check for and react to any user inputs
-    uiObj->CheckUserInput();
+    uiPtr->CheckUserInput();
 
-    // Cast the UI object, and update the Ui main menu status. 
-    // Temporary until a status page is made
-    UvCuringOvenUi* castUiObj = static_cast<UvCuringOvenUi*>(uiObj);
-    castUiObj->UpdateMainMenuStatus();
+    uiPtr->UpdateMainMenuStatus();
 
     // If the refresh flag is set, refresh the screen.
     if(_refreshScreen)
     {
         _refreshScreen = false;
-        uiObj->Draw();
+        uiPtr->Draw();
+    }
+
+
+    if(gUiCompletedSem.IsSignaled())
+    {
+        uiPtr->PlayCureCompleteBeep();
     }
 }
-
-
-
 

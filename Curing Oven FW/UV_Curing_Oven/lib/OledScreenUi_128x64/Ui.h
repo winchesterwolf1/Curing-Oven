@@ -2,6 +2,7 @@
 #include "Screens/NumericInput.h"
 #include "EncoderKnob.h"
 #include "Screens/Menu.h"
+#include "ToneGenerator.h"
 
 #ifndef UI_H
 #define UI_H
@@ -64,10 +65,10 @@ class Ui
         /// @brief Oled object used to draw the screens
         U8G2_SH1106_128X64_NONAME_1_4W_HW_SPI _u8g2;
 
-    private:
+        /// @brief Controller for producing audio feecback to the user
+        ToneGenerator _toneGenerator;
 
-        /// @brief Digital pin used to create UI beeps
-        int _speakerPin;
+    private:
 
         /// @brief List of screens used to draw the Ui
         ScreenEntry _screens[MAX_SCREENS];

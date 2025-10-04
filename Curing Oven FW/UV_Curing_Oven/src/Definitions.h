@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "PseudoRtos.h"
 
 /*** Digital Pin Mapping ***/
 // Digital input pin mapped to the UVLED pin. PD5, D5, Active High
@@ -26,30 +27,34 @@
 #define UVLED_DEFAULT_ON_TIME 1
 // Default Setting for the motor speed
 #define DEFAULT_MOTOR_SPEED 100
+// Length of the system event queue
+#define SYSTEM_EVENT_QUEUE_LENGTH 10
 
 /*** Conversion Parameters ***/
 // Seconds to Milliseconds conversion
 #define ms 1000
 
 
-/*** Global Classes, Structs and Enums ***/
+/*** Global Classes, Structs and Enums and types ***/
 
 /// @brief Settings class for the system settings
 struct SelectedSettings {
-    int on_time = UVLED_DEFAULT_ON_TIME;
+    int CuringTime = UVLED_DEFAULT_ON_TIME;
     int brightness = 100;
-    int motor_speed = DEFAULT_MOTOR_SPEED;
+    int MotorSpeed = DEFAULT_MOTOR_SPEED;
 };
 
-/// @brief Enum for the index of the system functions array
-enum SysFuncIndex
+/// @brief System events that can be queued in the system event queue
+typedef enum
 {
-    SysFuncLedStart,
-    SysFuncLedStop,
-    SysFuncMotorStart,
-    SysFuncMotorStop,
-    SysFuncUiSelectBeep,
-};
+    SysEvt_StartCuringPressed,
+    SysEvt_CuringTimerCompleted,
+    SysEvt_CancelCuringPressed
+} SysEvt_t;
+
+/// @brief Type for the system event queue
+typedef Queue<SysEvt_t, SYSTEM_EVENT_QUEUE_LENGTH> SysEvtQueue;
+
 
 /*** Debugging Defines ***/
 //#define TIMESERVER_DEBUG
