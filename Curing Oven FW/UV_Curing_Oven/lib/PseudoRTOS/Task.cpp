@@ -1,38 +1,45 @@
 #include "Task.h"
 
-Task::Task(unsigned int priority) :
+/// @brief Initialise default values and save priority
+Task::Task(Priority priority) :
     _priority(priority),
-    _state(TaskState::Ready),
+    _state(State::Ready),
     _nextTask(nullptr)
 {
 
 }
 
-Task::TaskState Task::GetState() const
+/// @brief return stored state
+Task::State Task::GetState() const
 {
     return _state;
 }
 
-void Task::SetState(const TaskState sate)
+/// @brief save new state
+void Task::SetState(const State sate)
 {
     _state = sate;
 }
 
+/// @brief return saved next task pointer
 Task* Task::GetNextTask() const
 {
     return _nextTask;
 }
 
+/// @brief change the next task pointer to the new one
 void Task::SetNextTask(Task* taskPtr)
 {
     _nextTask = taskPtr;
 }
 
+/// @brief return the saved priority from construction
 unsigned int Task::GetPriority() const
 {
-    return _priority;
+    return (int)_priority;
 }
 
+/// @brief save the pointer to the parent RTOS object
 void Task::RegisterOwner(PseudoRtos* pRtos)
 {
     _pRtos = pRtos;

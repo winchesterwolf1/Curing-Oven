@@ -5,17 +5,22 @@
 #define KNOB_PRESS_BEEP_TIME 40
 
 
-/// @brief Initialise Encoder Knob and Oled screen, then register callback functions, and start the Ui.
+/// @brief Save default values and pin mapping.
 Ui::Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, int speaker):
 _encoderKnob(knobS1, knobS2, knobKey), 
 _u8g2(oledRot, oledCs, oledDc, oledReset),
 _toneGenerator(speaker)
 {    
+
+}
+
+/// @brief Initialise encoder knob and start the u8g2 communications
+void Ui::Setup()
+{
     _encoderKnob.Register();
 
     _u8g2.begin();
     _u8g2.setFlipMode(1);
-
 }
 
 /// @brief draw the current screen

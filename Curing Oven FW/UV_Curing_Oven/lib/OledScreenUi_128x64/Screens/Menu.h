@@ -1,7 +1,8 @@
-#include "Screen.h"
-#include "MenuItem.h"
 #ifndef MENU_H
 #define MENU_H
+
+#include "Screen.h"
+#include "MenuItem.h"
 
 /// @brief Class for drawing a menu and handling scrolling through the menu and selecting an item using the encoder knob
 class Menu : public Screen

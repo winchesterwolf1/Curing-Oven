@@ -12,6 +12,9 @@ class ToneGenerator {
         /// @brief Class destructor
         ~ToneGenerator();
 
+        /// @brief Initialise output pin and set registers
+        void Setup();
+
         /// @brief Plays a frequency on the output pin of specified frequency and duration
         /// @attention If duration is set to 0, output will stay on untill stopped
         /// @param frequency Frequency of the output tone

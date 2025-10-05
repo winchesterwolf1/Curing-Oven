@@ -1,6 +1,7 @@
-#include <U8g2lib.h>
 #ifndef SCREEN_H
 #define SCREEN_H
+
+#include <U8g2lib.h>
 
 /*** Macros to aid in drawing screens ***/
 // Macro used to get the item height used by child classes

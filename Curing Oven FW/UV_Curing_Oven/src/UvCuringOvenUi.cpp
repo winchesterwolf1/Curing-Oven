@@ -3,9 +3,13 @@
 // Number of items in the main menu
 #define MAIN_MENU_NUM_ITEMS 6
 
+// Frequency of the cure complete beeps
 #define CURE_COMPLETE_BEEP_FREQ 2000
+// Duration of each cure complete beep
 #define CURE_COMPLETE_BEEP_DURATION 1500
+// Duration of the pause between each cure complete beep
 #define CURE_COMPLETE_BEEP_PAUSE_DURATION 1500
+// Number of beeps to produce when the curing has completed
 #define CURE_COMPLETE_BEEP_NUMBER 3
 
 /// @brief Constructor for this UI implementation
@@ -17,7 +21,7 @@
 /// @param oledDc Oled Dc pin
 /// @param oledReset Oled Reset Pin
 /// @param selectedSettings pointer to the system settings that will be updated by the Ui
-/// @param systemFunctions pointer to the system callback functions that will be run by the Ui
+/// @param evtQ pointer to the system events queue to trigger application actions
 UvCuringOvenUi::UvCuringOvenUi(
     int knobS1, int knobS2, int knobKey, 
     const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset,
@@ -30,6 +34,12 @@ UvCuringOvenUi::UvCuringOvenUi(
     _evtQ(evtQ),
     _returnWrapper({this, &UvCuringOvenUi::ReturnToPreviousScreen})
 {
+}
+
+/// @brief run base class setup function
+void UvCuringOvenUi::Setup()
+{
+    Ui::Setup();
 }
 
 /// @brief Initialises all the main menu items and callbacks, stores them 
@@ -107,7 +117,7 @@ void UvCuringOvenUi::PlayCureCompleteBeep()
     }
     else
     {
-        // Reset the timer
+        // Reset the counter
         numberOfBeeps = 0;
     }
 }

@@ -1,8 +1,8 @@
-#include "Definitions.h"
+#ifndef TASK_CURING_HARDWARE_H
+#define TASK_CURING_HARDWARE_H
 
-#ifndef CURINGHARDWARETASK_H
-#define CURINGHARDWARETASK_H
+#include "Definitions.h"
 
 extern Task* gCuringHardwareTaskPtr;
 
-#endif // CURINGHARDWARETASK_H
+#endif // TASK_CURING_HARDWARE_H

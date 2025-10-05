@@ -25,6 +25,9 @@ class UvCuringOvenUi : public Ui
         int speaker,
         SelectedSettings* selectedSettings, QueueBase* evtQ);
 
+    /// @brief Intialise all pins and registers relating to this Ui and start communications
+    void Setup();
+
     /// @brief Initialises all the main menu items and callbacks, stores them 
     /// all in a list, initialises the main menu, saves the main menu to the Ui, 
     /// and sets the Main menu as the current screen

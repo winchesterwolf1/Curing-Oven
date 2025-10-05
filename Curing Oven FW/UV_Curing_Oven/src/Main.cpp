@@ -4,9 +4,12 @@
 #include "Task_EventManager.h"
 #include "Task_Ui.h"
 
+// Create System environment info object
 static SelectedSettings settings;
+// Create Pseudo RTOS object
 static PseudoRtos pRtos(&settings);
 
+/// @brief Initialise application
 void setup() 
 {
     Serial.begin(9600);
@@ -14,14 +17,16 @@ void setup()
     Serial.println("Initialising Time Server");
     TimeServerInit();
         
-
+    // Initialise pRtos Tasks
     pRtos.RegisterTask(gEventManagerTaskPtr);
     pRtos.RegisterTask(gUiTaskPtr);
     pRtos.RegisterTask(gCuringHardwareTaskPtr);
 
+    // Initialise pRtos Queues
     static SysEvtQueue evtQueue;
     pRtos.RegisterQueue(&evtQueue, Queues_SysEvt);
 
+    // Initialise pRtos Semaphores
     static Semaphore cancelCuringTimer;
     pRtos.RegisterSemaphore(&cancelCuringTimer, Sem_CancelCuringTimer);
     static Semaphore lampOff;
@@ -37,9 +42,11 @@ void setup()
     static Semaphore uiNotifyCompleted;
     pRtos.RegisterSemaphore(&uiNotifyCompleted, Sem_UiNotifyCompleted);
 
+    // Initialise the pRtos
     pRtos.Init();
 }
 
+/// @brief Main loop, simply run the pRtos
 void loop() 
 {
     pRtos.RunThrough();

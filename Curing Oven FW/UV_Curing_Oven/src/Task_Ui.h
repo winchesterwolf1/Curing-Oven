@@ -1,8 +1,8 @@
-#include "Definitions.h"
+#ifndef TASK_UI_H
+#define TASK_UI_H
 
-#ifndef UI_TASK_H
-#define UI_TASK_H
+#include "Definitions.h"
 
 extern Task* gUiTaskPtr;
 
-#endif // UI_TASK_H
+#endif // TASK_UI_H

@@ -1,8 +1,8 @@
-#include "Definitions.h"
+#ifndef TASK_EVENT_MANAGER_H
+#define TASK_EVENT_MANAGER_H
 
-#ifndef EVENT_MANAGER_TASK_H
-#define EVENT_MANAGER_TASK_H
+#include "Definitions.h"
 
 extern Task* gEventManagerTaskPtr;
 
-#endif // EVENT_MANAGER_TASK_H
+#endif // TASK_EVENT_MANAGER_H

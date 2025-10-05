@@ -1,6 +1,7 @@
-#include "Timer.h"
-#ifndef TIMESERVER_H // include guard
+#ifndef TIMESERVER_H
 #define TIMESERVER_H
+
+#include "Timer.h"
 
 /// @brief Adds timer to the linked list and sets its completion timestamp.
 /// @param timer 

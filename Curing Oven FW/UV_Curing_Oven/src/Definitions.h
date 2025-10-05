@@ -19,6 +19,12 @@
 #define KNOB_ENC_1 15
 // Digital input pin mapped to the Knob S2 pin. PC0, A0/D14. ACW rotation first low
 #define KNOB_ENC_2 14
+// SPI Chip Select Pin used for controlling the OLED screen
+#define OLED_CS_PIN 10
+// SPI Data/Command pin used for controlling the OLED screen
+#define OLED_DC_PIN 8
+// Reset pin used for controlling the OLED screen
+#define OLED_RESET_PIN 7
 
 /*** System Parameters ***/
 // Number of Ms delay between each screen draw
@@ -29,6 +35,7 @@
 #define DEFAULT_MOTOR_SPEED 100
 // Length of the system event queue
 #define SYSTEM_EVENT_QUEUE_LENGTH 10
+
 
 /*** Conversion Parameters ***/
 // Seconds to Milliseconds conversion
@@ -83,7 +90,18 @@ enum ApplicationCountSems
 {
 };
 
-
+/*** PseudoRTOS Memory Settings ***/
+#undef SEMAPHORE_ARRAY_LEN
+#define SEMAPHORE_ARRAY_LEN 10
+// Maximum of items to store in the queue array
+#undef QUEUE_ARRAY_LEN
+#define QUEUE_ARRAY_LEN 1
+// Maximum of items to store in the mutex array
+#undef MUTEX_ARRAY_LEN
+#define MUTEX_ARRAY_LEN 0
+// Maximum of items to store in the counting semaphore array
+#undef COUNTSEMAPHORE_ARRAY_LEN
+#define COUNTSEMAPHORE_ARRAY_LEN 0
 
 /*** Debugging Defines ***/
 //#define TIMESERVER_DEBUG

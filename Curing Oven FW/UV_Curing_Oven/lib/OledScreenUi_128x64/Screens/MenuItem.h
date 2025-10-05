@@ -1,7 +1,8 @@
-#include "Screen.h"
-#include "UiCallbackWrapper.h"
 #ifndef MENU_ITEM_H
 #define MENU_ITEM_H
+
+#include "Screen.h"
+#include "UiCallbackWrapper.h"
 
 /// @brief Class for an item in a Ui menu
 class MenuItem

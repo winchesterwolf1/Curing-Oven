@@ -1,7 +1,8 @@
-#include "Screen.h"
-#include "UiCallbackWrapper.h"
 #ifndef NUMERIC_INPUT_H
 #define NUMERIC_INPUT_H
+
+#include "Screen.h"
+#include "UiCallbackWrapper.h"
 
 /// @brief Class used to draw a numeric input screen and handle parameter updates based on encoder knob input
 class NumericInput : public Screen

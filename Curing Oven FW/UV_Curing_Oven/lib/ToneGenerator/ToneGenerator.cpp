@@ -6,6 +6,12 @@ ToneGenerator::ToneGenerator(int pin) :
 _tonePin(pin)
 { }
 
+/// @brief Not yet implemented
+void ToneGenerator::Setup()
+{
+
+}
+
 /// @brief Default implementation atm
 ToneGenerator::~ToneGenerator()
 {

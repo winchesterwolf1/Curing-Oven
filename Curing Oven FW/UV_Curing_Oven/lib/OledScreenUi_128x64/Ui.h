@@ -1,11 +1,11 @@
+#ifndef UI_H
+#define UI_H
+
 #include "Screens/Screen.h"
 #include "Screens/NumericInput.h"
 #include "EncoderKnob.h"
 #include "Screens/Menu.h"
 #include "ToneGenerator.h"
-
-#ifndef UI_H
-#define UI_H
 
 // Maximum number of screens allowed to be registered to the UI. 
 #define MAX_SCREENS 10
@@ -39,6 +39,9 @@ class Ui
         /// @param speaker Speaker pin of this Ui
         Ui(int knobS1, int knobS2, int knobKey, const u8g2_cb_t *oledRot, int oledCs, int oledDc, int oledReset, int speaker);
 
+        /// @brief Initialise all registers, pins, and set default output required for operation
+        void Setup();
+
         /// @brief Adds a screen to the list of screens
         /// @param name name of the screen
         /// @param screen pointer for the screen
@@ -62,7 +65,7 @@ class Ui
         ToneGenerator _toneGenerator;
 
     private:
-    
+
         /// @brief struct for entries in the screen list 
         struct ScreenEntry
         {
