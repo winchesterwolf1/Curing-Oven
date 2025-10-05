@@ -1,10 +1,12 @@
 #ifndef PSEUDORTOS_TASK_H
 #define PSEUDORTOS_TASK_H
 
+class PseudoRtos;
+
 // Task function pointer type
 typedef void (*TaskFunction_t)(void*);
 
-// Task class definition
+// Task base class definition
 class Task {
     public:
 
@@ -15,12 +17,11 @@ class Task {
             Suspended
         };
 
-        Task(TaskFunction_t setupFunc, TaskFunction_t taskFunc, void* parameter, unsigned int priority);
-        ~Task();
+        Task(unsigned int priority);
 
-        void Setup();
+        virtual void Setup(void* param) = 0;
 
-        void RunTask();
+        virtual void RunTask(void* param) = 0;
 
         TaskState GetState() const;
 
@@ -32,11 +33,12 @@ class Task {
 
         unsigned int GetPriority() const;
 
-    private:
+        void RegisterOwner(PseudoRtos* pRtos);
     
-        TaskFunction_t _setupFunc;
-        TaskFunction_t _taskFunc;
-        void* _parameter;
+    protected:
+        PseudoRtos* _pRtos;
+
+    private:
         unsigned int _priority;
         TaskState _state;
         Task* _nextTask;

@@ -1,29 +1,11 @@
 #include "Task.h"
 
-Task::Task(TaskFunction_t setupFunc, TaskFunction_t taskFunc, void* parameter, unsigned int priority) :
-    _setupFunc(setupFunc),
-    _taskFunc(taskFunc),
-    _parameter(parameter),
+Task::Task(unsigned int priority) :
     _priority(priority),
     _state(TaskState::Ready),
     _nextTask(nullptr)
 {
 
-}
-
-Task::~Task()
-{
-
-}
-
-void Task::Setup()
-{
-    _setupFunc(_parameter);
-}
-
-void Task::RunTask()
-{
-    _taskFunc(_parameter);
 }
 
 Task::TaskState Task::GetState() const
@@ -51,4 +33,8 @@ unsigned int Task::GetPriority() const
     return _priority;
 }
 
+void Task::RegisterOwner(PseudoRtos* pRtos)
+{
+    _pRtos = pRtos;
+}
 

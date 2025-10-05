@@ -55,6 +55,35 @@ typedef enum
 /// @brief Type for the system event queue
 typedef Queue<SysEvt_t, SYSTEM_EVENT_QUEUE_LENGTH> SysEvtQueue;
 
+/// @brief Enum to list all of the available queues
+enum ApplicationQueues
+{
+    Queues_SysEvt = 0,
+};
+
+/// @brief Enum to list all of the available semaphores
+enum ApplicationSemaphores
+{
+    Sem_LampOn = 0,
+    Sem_LampOff,
+    Sem_MotorOn,
+    Sem_MotorOff,
+    Sem_UiNotifyCompleted,
+    Sem_StartCuringTimer,
+    Sem_CancelCuringTimer,
+};
+
+/// @brief Enum to list all of the available mutexes
+enum ApplicationMutexes
+{
+};
+
+/// @brief Enum to list all of the available counting semaphores
+enum ApplicationCountSems
+{
+};
+
+
 
 /*** Debugging Defines ***/
 //#define TIMESERVER_DEBUG

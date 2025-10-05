@@ -1,6 +1,7 @@
 #include "PseudoRtos.h"
 
-PseudoRtos::PseudoRtos() :
+PseudoRtos::PseudoRtos(void* appEnvInfo) :
+    _appEnvInfo(appEnvInfo),
     _headTask(nullptr)
 {
 
@@ -9,6 +10,7 @@ PseudoRtos::PseudoRtos() :
 /// @brief add task to linked list in order of priority
 void PseudoRtos::RegisterTask(Task* task)
 {
+    task->RegisterOwner(this);
     // Find where to place the new task in the list
     // If this one is going to come before head task, or if there are no tasks in the list...
     // 0 is highest priority
@@ -41,6 +43,7 @@ void PseudoRtos::RegisterTask(Task* task)
         listTask->SetNextTask(task);
     }
     // We have slotted this task in to its place in the task list and can return.
+
 }
 
 /// @brief change task status to suspended
@@ -55,6 +58,46 @@ void PseudoRtos::ResumeTask(Task* task)
     task->SetState(Task::TaskState::Running);
 }
 
+void PseudoRtos::RegisterQueue(QueueBase* queuePtr, unsigned int index)
+{
+    if(index >= QUEUE_ARRAY_LEN)
+    {
+        return;
+    }
+
+    Queues[index] = queuePtr;
+}
+
+void PseudoRtos::RegisterSemaphore(Semaphore* semPtr, unsigned int index)
+{
+    if(index >= SEMAPHORE_ARRAY_LEN)
+    {
+        return;
+    }
+
+    Semaphores[index] = semPtr;
+}
+
+void PseudoRtos::RegisterMutex(Mutex* mutxPtr, unsigned int index)
+{
+    if(index >= MUTEX_ARRAY_LEN)
+    {
+        return;
+    }
+
+    Mutexes[index] = mutxPtr;
+}
+
+void PseudoRtos::RegisterCountingSemaphore(CountingSemaphore* cntSemPtr, unsigned int index)
+{
+    if(index >= COUNTSEMAPHORE_ARRAY_LEN)
+    {
+        return;
+    }
+
+    CountSemapores[index] = cntSemPtr;
+}
+
 /// @brief run startup functions of all tasks
 void PseudoRtos::Init()
 {
@@ -62,7 +105,7 @@ void PseudoRtos::Init()
 
     while(task != nullptr)
     {
-        task->Setup();
+        task->Setup(_appEnvInfo);
         task = task->GetNextTask();
     }
 }
@@ -82,7 +125,7 @@ void PseudoRtos::Run()
                     task->SetState(Task::TaskState::Running);
                     // Intentional Fallthrough
                 case Task::TaskState::Running:
-                    task->RunTask();
+                    task->RunTask(_appEnvInfo);
                     // Intentional Fallthrough
                 case Task::TaskState::Suspended:
                     // Intentional Fallthrough
@@ -112,7 +155,7 @@ void PseudoRtos::RunThrough()
                 task->SetState(Task::TaskState::Running);
                 // Intentional Fallthrough
             case Task::TaskState::Running:
-                task->RunTask();
+                task->RunTask(_appEnvInfo);
                 // Intentional Fallthrough
             case Task::TaskState::Suspended:
                 // Intentional Fallthrough

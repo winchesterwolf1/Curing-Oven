@@ -4,9 +4,8 @@
 class Mutex {
 public:
     Mutex();
-    ~Mutex();
 
-    bool Take();
+    bool Lock();
 
     void Release();
 

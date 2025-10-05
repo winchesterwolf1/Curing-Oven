@@ -1,15 +1,11 @@
 #include "Definitions.h"
 #include "TimeServer.h"
-#include "CuringHardwareTask.h"
-#include "EventManagerTask.h"
-#include "UiTask.h"
+#include "Task_CuringHardware.h"
+#include "Task_EventManager.h"
+#include "Task_Ui.h"
 
 static SelectedSettings settings;
-static PseudoRtos pRtos;
-
-static Task eventManagerTask(SetupEventManager, RunEventManager, &settings, 0);
-static Task uiTask(SetupUi, RunUi, &settings, 1);
-static Task curingHwTask(SetupCuringHw, RunCuringHw, &settings, 1);
+static PseudoRtos pRtos(&settings);
 
 void setup() 
 {
@@ -19,9 +15,27 @@ void setup()
     TimeServerInit();
         
 
-    pRtos.RegisterTask(&eventManagerTask);
-    pRtos.RegisterTask(&uiTask);
-    pRtos.RegisterTask(&curingHwTask);
+    pRtos.RegisterTask(gEventManagerTaskPtr);
+    pRtos.RegisterTask(gUiTaskPtr);
+    pRtos.RegisterTask(gCuringHardwareTaskPtr);
+
+    static SysEvtQueue evtQueue;
+    pRtos.RegisterQueue(&evtQueue, Queues_SysEvt);
+
+    static Semaphore cancelCuringTimer;
+    pRtos.RegisterSemaphore(&cancelCuringTimer, Sem_CancelCuringTimer);
+    static Semaphore lampOff;
+    pRtos.RegisterSemaphore(&lampOff, Sem_LampOff);
+    static Semaphore lampOn;
+    pRtos.RegisterSemaphore(&lampOn, Sem_LampOn);
+    static Semaphore motorOff;
+    pRtos.RegisterSemaphore(&motorOff, Sem_MotorOff);
+    static Semaphore motorOn;
+    pRtos.RegisterSemaphore(&motorOn, Sem_MotorOn);
+    static Semaphore startCuringTimer;
+    pRtos.RegisterSemaphore(&startCuringTimer, Sem_StartCuringTimer);
+    static Semaphore uiNotifyCompleted;
+    pRtos.RegisterSemaphore(&uiNotifyCompleted, Sem_UiNotifyCompleted);
 
     pRtos.Init();
 }

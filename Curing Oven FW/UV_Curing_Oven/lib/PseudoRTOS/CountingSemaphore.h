@@ -1,24 +1,18 @@
 #ifndef COUNTINGSEMAPHORE_H
 #define COUNTINGSEMAPHORE_H
 
+/// @brief 
 class CountingSemaphore {
 public:
-    CountingSemaphore();
-    CountingSemaphore(int initialCount = 0);
+    CountingSemaphore(unsigned int initialCount, unsigned int maxValue);
 
-    void Add();
-    void Add(int number);
+    bool Give();
 
-    void Subtract();
-    void Subtract(int number);
-
-    int Peek() const;
-
-    int TakeCount();
+    bool Take();
 
 private:
-    int const _resetValue;
-    int _count;
+    unsigned int const _maxValue;
+    unsigned int _count;
 };
 
 #endif // COUNTINGSEMAPHORE_H

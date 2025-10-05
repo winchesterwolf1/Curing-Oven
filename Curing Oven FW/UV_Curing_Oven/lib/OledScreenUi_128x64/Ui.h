@@ -10,13 +10,6 @@
 // Maximum number of screens allowed to be registered to the UI. 
 #define MAX_SCREENS 10
 
-/// @brief struct for entries in the screen list 
-struct ScreenEntry
-{
-    const char* name = nullptr;
-    Screen* screen = nullptr;
-};
-
 /// @brief Class to hold all of the functional Ui elements to handle displaying screens and running callbacks
 class Ui 
 {
@@ -69,6 +62,13 @@ class Ui
         ToneGenerator _toneGenerator;
 
     private:
+    
+        /// @brief struct for entries in the screen list 
+        struct ScreenEntry
+        {
+            const char* name = nullptr;
+            Screen* screen = nullptr;
+        };
 
         /// @brief List of screens used to draw the Ui
         ScreenEntry _screens[MAX_SCREENS];

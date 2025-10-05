@@ -1,45 +1,28 @@
 #include "CountingSemaphore.h"
 
-CountingSemaphore::CountingSemaphore() :
-    _resetValue(0),
-    _count(0)
-{
-
-}
-CountingSemaphore::CountingSemaphore(int initialCount) :
-    _resetValue(initialCount),
+CountingSemaphore::CountingSemaphore(unsigned int initialCount, unsigned int maxValue) :
+    _maxValue(initialCount),
     _count(initialCount)
 {
 
 }
 
-void CountingSemaphore::Add()
+bool CountingSemaphore::Give()
 {
-    Add(1);
-}
-void CountingSemaphore::Add(int number)
-{
-    _count += number;
-}
-
-void CountingSemaphore::Subtract()
-{
-    Subtract(1);
-}
-void CountingSemaphore::Subtract(int number)
-{
-    _count -= number;
+    if(_count == _maxValue)
+    {
+        return false;
+    }
+    _count++;
+    return true;
 }
 
-int CountingSemaphore::Peek() const
+bool CountingSemaphore::Take()
 {
-    return _count;
+    if(_count == 0)
+    {
+        return false;
+    }
+    _count--;
+    return true;
 }
-
-int CountingSemaphore::TakeCount()
-{
-    int count = _count;
-    _count = _resetValue;
-    return count;
-}
-

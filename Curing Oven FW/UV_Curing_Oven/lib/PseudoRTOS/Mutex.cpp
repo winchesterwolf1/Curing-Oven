@@ -6,12 +6,7 @@ Mutex::Mutex() :
 
 }
 
-Mutex::~Mutex()
-{
-
-}
-
-bool Mutex::Take()
+bool Mutex::Lock()
 {
     if(_mutex)
     {
