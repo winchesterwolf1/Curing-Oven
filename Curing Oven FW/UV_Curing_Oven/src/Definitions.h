@@ -16,9 +16,9 @@
 // Digital input pin mapped to the Knob key pin. PD2, D2, Push switch Active Low
 #define KNOB_PUSH 2
 // Digital input pin mapped to the Knob S1 pin. PC1, A1/D15. ACW rotation second low
-#define KNOB_ENC_1 15
+#define KNOB_ENC_1 14
 // Digital input pin mapped to the Knob S2 pin. PC0, A0/D14. ACW rotation first low
-#define KNOB_ENC_2 14
+#define KNOB_ENC_2 15
 // SPI Chip Select Pin used for controlling the OLED screen
 #define OLED_CS_PIN 10
 // SPI Data/Command pin used for controlling the OLED screen
