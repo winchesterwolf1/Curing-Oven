@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "Motor.h"
 #include "UvLamp.h"
+#include "EEPROM/EEPROM.h"
 
 /// @brief Task for running the hardware and timers used to run a curing cycle
 class CuringHardwareTask : public Task
@@ -31,6 +32,8 @@ class CuringHardwareTask : public Task
             _lampController.Setup();
             _motorController.Setup();
             _motorController.setSpeed(settings->MotorSpeed);
+
+            _eepromController.WriteByte(0, 10);
         }
 
         /// @brief Check all semaphores and react to commands from the event manager
@@ -75,6 +78,9 @@ class CuringHardwareTask : public Task
                     _curingCycleTimer.Stop();
                 }
             }
+
+            uint8_t eeprom_result = _eepromController.ReadByte(0);
+            Serial.println(eeprom_result);
         }
 
     private:
@@ -85,6 +91,8 @@ class CuringHardwareTask : public Task
         Motor _motorController;
         /// @brief Lamp Controller to switching the UV bulb on and off
         UvLamp _lampController;
+
+        EEPROM _eepromController;
 
         /// @brief Function to call to trigger stopping the curing cycle.
         void CompleteCuringCycle()
